@@ -36,17 +36,18 @@ class Mobilenetv2(nn.Module):
 
 st.title('画像判定アプリ')
 
-st.write("画像を分類する数を指定してください")
-class_num  = st.slider('分類数', 1, 10, 4)
+st.sidebar.write("画像を分類する数を指定してください")
+class_num  = st.sidebar.slider('分類数', 1, 20, 4)
 
 features =[]
 
 for i in range(class_num):
-    d = st.text_input(f'{str(i + 1)}番目の分類名は')
+    d = st.sidebar.text_input(f'{str(i + 1)}番目の分類名は',value=str(i + 1))
     features.append(d)
 
+st.markdown('学習の実施は[こちら](https://github.com/saotomryo/Image_Identification/blob/master/Use_MobelenetV2.ipynb)')
+upload_model = st.file_uploader('学習したAIモデルをアップロードしてください',type=['pth'])
 
-upload_model = st.file_uploader('AIモデルをアップロードしてください',type=['pth'])
 
 net = Mobilenetv2(mob_model, class_num)
 
@@ -68,13 +69,11 @@ if uploaded_file is not None:
     with torch.no_grad():
         out = net(data)
         predict = out.argmax(dim=1)
-        st.write(out)
-
-    syubetsu = ["ブリッジ","角","芋"]
+        #st.write(out)
 
     st.markdown('認識結果')
 
-    st.write(predict.detach().numpy()[0])
+    #st.write(predict.detach().numpy()[0])
     st.write(features[predict.detach().numpy()[0]])
 
     st.image(img)
