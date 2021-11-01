@@ -21,41 +21,31 @@ transform = transforms.Compose([ # 検証データ用の画像の前処理
 
 # モデルクラスの宣言
 
-mob_model = mobilenetv2.mobilenet_v2(pretrained=False)
+mob_model = mobilenetv2.mobilenet_v2(pretrained=True)
 
 class Mobilenetv2(nn.Module):
-    def __init__(self, mob_model, class_num):
+    def __init__(self, mob_model):
         super(Mobilenetv2, self).__init__()
         self.vit = mob_model
-        self.fc = nn.Linear(1000, class_num)
 
     def forward(self, input_ids):
         states = self.vit(input_ids)
-        states = self.fc(states)
         return states
 
 st.title('画像判定アプリ')
-
-st.sidebar.write("画像を分類する数を指定してください")
-class_num  = st.sidebar.slider('分類数', 1, 20, 4)
-
-features =[]
-
-for i in range(class_num):
-    d = st.sidebar.text_input(f'{str(i + 1)}番目の分類名は',value=str(i + 1))
-    features.append(d)
 
 st.markdown('学習の実施は[こちら](https://github.com/saotomryo/Image_Identification/blob/master/Use_MobelenetV2.ipynb)')
 upload_model = st.file_uploader('学習したAIモデルをアップロードしてください',type=['pth'])
 
 
-net = Mobilenetv2(mob_model, class_num)
-
 if upload_model is not None:
-    net.load_state_dict(torch.load(upload_model,map_location=torch.device('cpu')))
-#else:
-#    model_path = './model/model0.pth'
-#    net.load_state_dict(torch.load(model_path,map_location=torch.device('cpu')))
+    #net.load_state_dict(torch.load(upload_model,map_location=torch.device('cpu')))
+    net = torch.load(upload_model)
+    features = net.categories
+else:
+    net = Mobilenetv2(mob_model)
+    features = [i for i in range(1000)]
+
 
 uploaded_file = st.file_uploader('検査する写真をアップロードが撮影してください。', type=['jpg','png','jpeg'])
 if uploaded_file is not None:
