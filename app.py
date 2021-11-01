@@ -65,8 +65,6 @@ if uploaded_file is not None:
 
     st.markdown('認識結果')
 
-    st.write(out)
-
     #st.write(predict.detach().numpy()[0])
     st.write(features[predict.detach().numpy()[0]])
 
