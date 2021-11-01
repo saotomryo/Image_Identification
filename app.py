@@ -21,15 +21,17 @@ transform = transforms.Compose([ # 検証データ用の画像の前処理
 
 # モデルクラスの宣言
 
-mob_model = mobilenetv2.mobilenet_v2(pretrained=True)
+mob_model = mobilenetv2.mobilenet_v2(pretrained=False)
 
 class Mobilenetv2(nn.Module):
     def __init__(self, mob_model):
         super(Mobilenetv2, self).__init__()
         self.vit = mob_model
+        self.fc = nn.Linear(1000, 10)
 
     def forward(self, input_ids):
         states = self.vit(input_ids)
+        states = self.fc(states)
         return states
 
 st.title('画像判定アプリ')
@@ -43,7 +45,7 @@ if upload_model is not None:
     net = torch.load(upload_model)
     features = net.categories
 else:
-    net = Mobilenetv2(mob_model)
+    net = mobilenetv2.mobilenet_v2(pretrained=True)
     features = [i for i in range(1000)]
 
 
@@ -62,6 +64,8 @@ if uploaded_file is not None:
         #st.write(out)
 
     st.markdown('認識結果')
+
+    st.write(out)
 
     #st.write(predict.detach().numpy()[0])
     st.write(features[predict.detach().numpy()[0]])
