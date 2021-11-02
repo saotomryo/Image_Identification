@@ -4,7 +4,7 @@ from torchvision.models import mobilenetv2
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-
+import json
 
 import streamlit as st
 from PIL import Image
@@ -37,7 +37,7 @@ class Mobilenetv2(nn.Module):
 st.title('画像判定アプリ')
 
 st.markdown('学習の実施は[こちら](https://github.com/saotomryo/Image_Identification/blob/master/Use_MobelenetV2.ipynb)')
-upload_model = st.file_uploader('学習したAIモデルをアップロードしてください',type=['pth'])
+upload_model = st.file_uploader('学習したAIモデルをアップロードしてください(アップロードしない場合は、事前学習された内容で判定します。)',type=['pth'])
 
 
 if upload_model is not None:
@@ -46,10 +46,14 @@ if upload_model is not None:
     features = net.categories
 else:
     net = mobilenetv2.mobilenet_v2(pretrained=True)
-    features = [i for i in range(1000)]
+    json_open = open('imagenet1000_clsidx_to_labels.json', 'r')
+    json_load = json.load(json_open)
+    print(json_load)
+    #features = json_open[i]
+    #features = [i for i in range(1000)]
 
 
-uploaded_file = st.file_uploader('検査する写真をアップロードが撮影してください。', type=['jpg','png','jpeg'])
+uploaded_file = st.file_uploader('判定する写真をアップロードが撮影してください。', type=['jpg','png','jpeg'])
 if uploaded_file is not None:
 
     img = Image.open(uploaded_file)
@@ -65,7 +69,11 @@ if uploaded_file is not None:
 
     st.markdown('認識結果')
 
+    i = predict.detach().numpy()[0]
+
     #st.write(predict.detach().numpy()[0])
-    st.write(features[predict.detach().numpy()[0]])
+    st.write(json_load[str(i)])
+    
+    #st.write(features[predict.detach().numpy()[0]])
 
     st.image(img)
