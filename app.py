@@ -48,7 +48,7 @@ else:
     net = mobilenetv2.mobilenet_v2(pretrained=True)
     json_open = open('imagenet1000_clsidx_to_labels.json', 'r')
     json_load = json.load(json_open)
-    print(json_load)
+    #print(json_load)
     #features = json_open[i]
     #features = [i for i in range(1000)]
 
