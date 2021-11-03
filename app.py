@@ -39,6 +39,7 @@ st.title('画像判定アプリ')
 st.markdown('学習の実施は[こちら](https://github.com/saotomryo/Image_Identification/blob/master/Use_MobelenetV2.ipynb)')
 upload_model = st.file_uploader('学習したAIモデルをアップロードしてください(アップロードしない場合は、事前学習された内容で判定します。)',type=['pth'])
 
+json_load = None
 
 if upload_model is not None:
     #net.load_state_dict(torch.load(upload_model,map_location=torch.device('cpu')))
@@ -48,10 +49,6 @@ else:
     net = mobilenetv2.mobilenet_v2(pretrained=True)
     json_open = open('imagenet1000_clsidx_to_labels.json', 'r')
     json_load = json.load(json_open)
-    #print(json_load)
-    #features = json_open[i]
-    #features = [i for i in range(1000)]
-
 
 uploaded_file = st.file_uploader('判定する写真をアップロードが撮影してください。', type=['jpg','png','jpeg'])
 if uploaded_file is not None:
@@ -72,8 +69,8 @@ if uploaded_file is not None:
     if upload_model is not None:
         st.write(features[predict.detach().numpy()[0]])
     else:
-        i = predict.detach().numpy()[0]
-
-        st.write(json_load[str(i)])
+        if json_load is not None:
+            i = predict.detach().numpy()[0]
+            st.write(json_load[str(i)])
 
     st.image(img)
