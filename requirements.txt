@@ -3,6 +3,6 @@ Pillow==8.1.0
 streamlit==1.1.0
 
 torch==1.10.0
-torchvision==0.11.1+cu111
+torchvision==0.11.1
 transformers==4.11.3
 cloudpickle
