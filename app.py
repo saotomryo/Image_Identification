@@ -1,10 +1,12 @@
 import torch
+import torchvision
 from torchvision import transforms
 from torchvision.models import mobilenetv2
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import json
+import cloudpickle
 
 import streamlit as st
 from PIL import Image
@@ -21,13 +23,16 @@ transform = transforms.Compose([ # 検証データ用の画像の前処理
 
 # モデルクラスの宣言
 
-mob_model = mobilenetv2.mobilenet_v2(pretrained=False)
-
 class Mobilenetv2(nn.Module):
-    def __init__(self, mob_model):
+    def __init__(self, pretrained_mob_model, class_num):
         super(Mobilenetv2, self).__init__()
-        self.vit = mob_model
-        self.fc = nn.Linear(1000, 10)
+        self.class_num = None
+        self.vit = pretrained_mob_model #学習ずみモデル
+        self.fc = nn.Linear(1000, class_num)
+        self.categories = None
+
+    def get_class_num(self):
+        return self.class_num
 
     def forward(self, input_ids):
         states = self.vit(input_ids)
@@ -41,13 +46,26 @@ upload_model = st.file_uploader('学習したAIモデルをアップロードし
 
 json_load = None
 
+st.write(torchvision.__version__) 
+
 if upload_model is not None:
     #net.load_state_dict(torch.load(upload_model,map_location=torch.device('cpu')))
-    try:
-        net = torch.load(upload_model)
-        features = net.categories
-    except:
-        st.write("画面をリロードしてください。")
+    #try:
+    net = torch.load(upload_model)
+
+    #img = Image.open(uploaded_file)
+    #model_path = f'model/{upload_model.name}'
+    #img.save(img_path)
+    #with open(model_path, 'wb') as f:
+    #    cloudpickle.dump(upload_model, f)
+
+    #with open(model_path, 'rb') as f:
+    #    net = cloudpickle.load(f)
+    #print(net)
+    features = net.categories
+    #except:
+    #    st.write("画面をリロードしてください。")
+    #    upload_model = None
 else:
     try:
         net = mobilenetv2.mobilenet_v2(pretrained=True)
