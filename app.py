@@ -46,26 +46,14 @@ upload_model = st.file_uploader('学習したAIモデルをアップロードし
 
 json_load = None
 
-st.write(torchvision.__version__) 
-
 if upload_model is not None:
     #net.load_state_dict(torch.load(upload_model,map_location=torch.device('cpu')))
-    #try:
-    net = torch.load(upload_model)
-
-    #img = Image.open(uploaded_file)
-    #model_path = f'model/{upload_model.name}'
-    #img.save(img_path)
-    #with open(model_path, 'wb') as f:
-    #    cloudpickle.dump(upload_model, f)
-
-    #with open(model_path, 'rb') as f:
-    #    net = cloudpickle.load(f)
-    #print(net)
-    features = net.categories
-    #except:
-    #    st.write("画面をリロードしてください。")
-    #    upload_model = None
+    try:
+        net = torch.load(upload_model)
+        features = net.categories
+    except:
+        st.write("画面をリロードしてください。")
+        upload_model = None
 else:
     try:
         net = mobilenetv2.mobilenet_v2(pretrained=True)
