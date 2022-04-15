@@ -32,7 +32,7 @@ Image Identification
 
 アプリケーションは、以下で公開しています。
 
-https://share.streamlit.io/saotomryo/handajudgement/app.py
+https://share.streamlit.io/saotomryo/image_identification/app.py
 
 
 
